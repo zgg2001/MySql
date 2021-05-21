@@ -17,6 +17,8 @@ public:
 	int GetTableField(const char* table_name);
 	//查询表 参数为表名
 	bool Query(const char* table_name);
+	//自由执行指令
+	bool Implement(const char* sentence);
 	
 
 private:

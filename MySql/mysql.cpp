@@ -41,8 +41,13 @@ bool DataBase::Connect(const char* ip, const char* name, const char* cypher, con
 
 int DataBase::GetTableField(const char* table_name)
 {
+    if (false == _state)
+    {
+        printf("Database not connected\n");
+        return -1;
+    }
     //查询内容
-    sprintf_s(_query, "desc %s", table_name); //desc 语句获取字段名
+    sprintf_s(_query, "desc %s", table_name); //desc 语句获取字段数
     //设置编码格式（SET NAMES GBK也行），否则cmd下中文乱码 
     mysql_query(_mysql, "set names gbk");
     //返回0 查询成功，返回1查询失败  
@@ -63,9 +68,13 @@ int DataBase::GetTableField(const char* table_name)
 
 bool DataBase::Query(const char* table_name)
 {
+    if (false == _state)
+    {
+        printf("Database not connected\n");
+        return false;
+    }
     //获取字段数
     int field = GetTableField(table_name);
-
     //查询内容
     sprintf_s(_query, "select * from %s", table_name); //执行查询语句 
     //设置编码格式（SET NAMES GBK也行），否则cmd下中文乱码 
@@ -107,6 +116,26 @@ bool DataBase::Query(const char* table_name)
             printf("%10s\t", _column[i]);  //column是列数组  
         }
         printf("\n");
+    }
+    return true;
+}
+
+bool DataBase::Implement(const char* sentence)
+{
+    if (false == _state)
+    {
+        printf("Database not connected\n");
+        return false;
+    }
+    //查询内容
+    sprintf_s(_query, "%s", sentence); //desc 语句获取字段数
+    //设置编码格式（SET NAMES GBK也行），否则cmd下中文乱码 
+    mysql_query(_mysql, "set names gbk");
+    //执行SQL语句
+    if (mysql_query(_mysql, _query))    
+    {
+        printf("Query failed (%s)\n", mysql_error(_mysql));
+        return false;
     }
     return true;
 }
